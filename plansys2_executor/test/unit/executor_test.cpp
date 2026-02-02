@@ -36,10 +36,10 @@
 #include "plansys2_executor/ExecutorClient.hpp"
 #include "plansys2_problem_expert/Utils.hpp"
 
-#include "behaviortree_cpp_v3/behavior_tree.h"
-#include "behaviortree_cpp_v3/bt_factory.h"
-#include "behaviortree_cpp_v3/utils/shared_library.h"
-#include "behaviortree_cpp_v3/blackboard.h"
+#include "behaviortree_cpp/behavior_tree.h"
+#include "behaviortree_cpp/bt_factory.h"
+#include "behaviortree_cpp/utils/shared_library.h"
+#include "behaviortree_cpp/blackboard.h"
 
 #include "plansys2_executor/behavior_tree/execute_action_node.hpp"
 #include "plansys2_executor/behavior_tree/wait_action_node.hpp"
@@ -278,7 +278,7 @@ TEST(executor, action_executor_client)
 
   auto status = BT::NodeStatus::RUNNING;
   while (status != BT::NodeStatus::SUCCESS) {
-    status = tree.tickRoot();
+    status = tree.rootNode()->executeTick();
   }
 
   ASSERT_EQ(status, BT::NodeStatus::SUCCESS);
@@ -729,7 +729,7 @@ TEST(executor, action_real_action_1)
     auto status = BT::NodeStatus::RUNNING;
 
     for (int i = 0; i < 10; i++) {
-      status = tree.tickRoot();
+      status = tree.rootNode()->executeTick();
       ASSERT_EQ(status, BT::NodeStatus::RUNNING);
       ASSERT_EQ(WaitActionTest::test_status, BT::NodeStatus::RUNNING);
     }
@@ -773,7 +773,7 @@ TEST(executor, action_real_action_1)
     auto status = BT::NodeStatus::RUNNING;
 
     ASSERT_TRUE(problem_client->existPredicate(plansys2::Predicate("(robot_available r2d2)")));
-    status = tree.tickRoot();
+    status = tree.rootNode()->executeTick();
 
     ASSERT_EQ(ApplyAtStartEffectTest::test_status, BT::NodeStatus::SUCCESS);
     ASSERT_FALSE(problem_client->existPredicate(plansys2::Predicate("(robot_available r2d2)")));
@@ -782,16 +782,16 @@ TEST(executor, action_real_action_1)
         plansys2::Predicate(
           "(robot_at r2d2 steering_wheels_zone)")));
 
-    status = tree.tickRoot();
+    status = tree.rootNode()->executeTick();
     ASSERT_EQ(CheckOverAllReqTest::test_status, BT::NodeStatus::SUCCESS);
     ASSERT_EQ(ExecuteActionTest::test_status, BT::NodeStatus::RUNNING);
-    status = tree.tickRoot();
+    status = tree.rootNode()->executeTick();
     ASSERT_EQ(CheckOverAllReqTest::test_status, BT::NodeStatus::SUCCESS);
     ASSERT_EQ(ExecuteActionTest::test_status, BT::NodeStatus::RUNNING);
 
     ASSERT_TRUE(problem_client->removePredicate(plansys2::Predicate("(battery_full r2d2)")));
 
-    status = tree.tickRoot();
+    status = tree.rootNode()->executeTick();
     ASSERT_EQ(CheckOverAllReqTest::test_status, BT::NodeStatus::FAILURE);
     ASSERT_EQ(status, BT::NodeStatus::FAILURE);
   } catch (const std::exception & e) {
@@ -816,7 +816,7 @@ TEST(executor, action_real_action_1)
     ASSERT_TRUE(problem_client->existPredicate(plansys2::Predicate("(robot_available r2d2)")));
 
     while (ApplyAtStartEffectTest::test_status != BT::NodeStatus::SUCCESS) {
-      status = tree.tickRoot();
+      status = tree.rootNode()->executeTick();
     }
 
     ASSERT_FALSE(
@@ -826,12 +826,12 @@ TEST(executor, action_real_action_1)
     ASSERT_FALSE(problem_client->existPredicate(plansys2::Predicate("(robot_available r2d2)")));
 
     while (ExecuteActionTest::test_status != BT::NodeStatus::SUCCESS) {
-      status = tree.tickRoot();
+      status = tree.rootNode()->executeTick();
       ASSERT_EQ(CheckOverAllReqTest::test_status, BT::NodeStatus::SUCCESS);
     }
 
     while (ApplyAtEndEffectTest::test_status != BT::NodeStatus::SUCCESS) {
-      status = tree.tickRoot();
+      status = tree.rootNode()->executeTick();
     }
 
     ASSERT_TRUE(
@@ -992,7 +992,7 @@ TEST(executor, cancel_bt_execution)
     auto status = BT::NodeStatus::RUNNING;
 
     ASSERT_TRUE(problem_client->existPredicate(plansys2::Predicate("(robot_available r2d2)")));
-    status = tree.tickRoot();
+    status = tree.rootNode()->executeTick();
 
     ASSERT_EQ(ApplyAtStartEffectTest::test_status, BT::NodeStatus::SUCCESS);
     ASSERT_FALSE(problem_client->existPredicate(plansys2::Predicate("(robot_available r2d2)")));
@@ -1001,10 +1001,10 @@ TEST(executor, cancel_bt_execution)
         plansys2::Predicate(
           "(robot_at r2d2 steering_wheels_zone)")));
 
-    status = tree.tickRoot();
+    status = tree.rootNode()->executeTick();
     ASSERT_EQ(CheckOverAllReqTest::test_status, BT::NodeStatus::SUCCESS);
     ASSERT_EQ(ExecuteActionTest::test_status, BT::NodeStatus::RUNNING);
-    status = tree.tickRoot();
+    status = tree.rootNode()->executeTick();
     ASSERT_EQ(CheckOverAllReqTest::test_status, BT::NodeStatus::SUCCESS);
     ASSERT_EQ(ExecuteActionTest::test_status, BT::NodeStatus::RUNNING);
 
@@ -1024,9 +1024,9 @@ TEST(executor, cancel_bt_execution)
 
     tree = factory.createTreeFromText(bt_xml_tree, blackboard);
 
-    status = tree.tickRoot();
-    status = tree.tickRoot();
-    status = tree.tickRoot();
+    status = tree.rootNode()->executeTick();
+    status = tree.rootNode()->executeTick();
+    status = tree.rootNode()->executeTick();
     ASSERT_EQ(ApplyAtStartEffectTest::test_status, BT::NodeStatus::SUCCESS);
     ASSERT_EQ(CheckOverAllReqTest::test_status, BT::NodeStatus::SUCCESS);
     ASSERT_EQ(ExecuteActionTest::test_status, BT::NodeStatus::RUNNING);
