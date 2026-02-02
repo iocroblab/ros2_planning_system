@@ -22,7 +22,7 @@
 #include <memory>
 #include <chrono>
 
-#include "behaviortree_cpp_v3/utils/shared_library.h"
+#include "behaviortree_cpp/utils/shared_library.h"
 #include "plansys2_bt_actions/BTAction.hpp"
 
 namespace plansys2
@@ -78,7 +78,7 @@ BTAction::on_configure(const rclcpp_lifecycle::State & previous_state)
 rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
 BTAction::on_cleanup(const rclcpp_lifecycle::State & previous_state)
 {
-  publisher_zmq_.reset();
+  // publisher_zmq_.reset();
   return ActionExecutorClient::on_cleanup(previous_state);
 }
 
@@ -109,7 +109,7 @@ BTAction::on_activate(const rclcpp_lifecycle::State & previous_state)
       std::string filename_extension = filename.str() + ".fbl";
       RCLCPP_WARN_STREAM(get_logger(), filename.str());
       bt_file_logger_ =
-        std::make_unique<BT::FileLogger>(tree_, filename_extension.c_str());
+        std::make_unique<BT::FileLogger2>(tree_, filename_extension.c_str());
     }
 
     if (get_parameter("bt_minitrace_logging").as_bool()) {
@@ -136,14 +136,15 @@ BTAction::on_activate(const rclcpp_lifecycle::State & previous_state)
       get_logger(),
       "[%s] Groot monitoring: Publisher port: %d, Server port: %d, Max msgs per second: %d",
       get_name(), publisher_port, server_port, max_msgs_per_second);
-    try {
-      publisher_zmq_.reset(
-        new BT::PublisherZMQ(
-          tree_, max_msgs_per_second, publisher_port,
-          server_port));
-    } catch (const BT::LogicError & exc) {
-      RCLCPP_ERROR(get_logger(), "ZMQ error: %s", exc.what());
-    }
+    // try {
+    //   publisher_zmq_.reset(
+    //     new BT::PublisherZMQ(
+    //       tree_, max_msgs_per_second, publisher_port,
+    //       server_port));
+    // } catch (const BT::LogicError & exc) {
+    //   RCLCPP_ERROR(get_logger(), "ZMQ error: %s", exc.what());
+    // }
+    RCLCPP_WARN(get_logger(), "BT::PublisherZMQ requires migration from BTv3 to BTv4.");
   }
 #endif
 
@@ -154,7 +155,7 @@ BTAction::on_activate(const rclcpp_lifecycle::State & previous_state)
 rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
 BTAction::on_deactivate(const rclcpp_lifecycle::State & previous_state)
 {
-  publisher_zmq_.reset();
+  // publisher_zmq_.reset();
   tree_.haltTree();
 
   return ActionExecutorClient::on_deactivate(previous_state);
