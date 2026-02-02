@@ -20,7 +20,7 @@
 #include <memory>
 
 
-#include "behaviortree_cpp_v3/action_node.h"
+#include "behaviortree_cpp/action_node.h"
 
 #include "plansys2_executor/ActionExecutor.hpp"
 
