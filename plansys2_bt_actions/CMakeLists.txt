@@ -9,7 +9,7 @@ find_package(rclcpp REQUIRED)
 find_package(rclcpp_action REQUIRED)
 find_package(rclcpp_lifecycle REQUIRED)
 find_package(plansys2_executor REQUIRED)
-find_package(behaviortree_cpp_v3 REQUIRED)
+find_package(behaviortree_cpp REQUIRED)
 find_package(action_msgs REQUIRED)
 find_package(lifecycle_msgs REQUIRED)
 
@@ -28,7 +28,7 @@ set(dependencies
     rclcpp_action
     rclcpp_lifecycle
     plansys2_executor
-    behaviortree_cpp_v3
+    behaviortree_cpp
     action_msgs
     lifecycle_msgs
 )
