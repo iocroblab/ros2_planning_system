@@ -18,9 +18,9 @@
 #include <iostream>
 #include <fstream>
 
-#include "behaviortree_cpp_v3/behavior_tree.h"
-#include "behaviortree_cpp_v3/bt_factory.h"
-#include "behaviortree_cpp_v3/utils/shared_library.h"
+#include "behaviortree_cpp/behavior_tree.h"
+#include "behaviortree_cpp/bt_factory.h"
+#include "behaviortree_cpp/utils/shared_library.h"
 
 #include "../behavior_tree/OpenGripper.hpp"
 #include "../behavior_tree/CloseGripper.hpp"
