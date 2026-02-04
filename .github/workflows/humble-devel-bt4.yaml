@@ -2,24 +2,18 @@ name: humble-devel-bt4
 
 on:
   pull_request:
-    branches:
-      - humble-devel-bt4
+    branches: [humble-devel-bt4]
   push:
-    branches:
-      - humble-devel-bt4
+    branches: [humble-devel-bt4]
 
 jobs:
   build-and-test:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-22.04]
-      fail-fast: false
+    runs-on: ubuntu-22.04
     steps:
-      - name: Install popf deps + BehaviorTree.CPP
+      - name: Install Ubuntu deps
         run: |
           sudo apt-get update
-          sudo apt-get install -y libfl-dev ros-humble-behaviortree-cpp
+          sudo apt-get install -y libfl-dev
 
       - name: Fix pip
         run: |
@@ -30,6 +24,11 @@ jobs:
         uses: ros-tooling/setup-ros@0.3.3
         with:
           required-ros-distributions: humble
+
+      - name: Install ROS deps
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ros-humble-behaviortree-cpp
 
       - name: build and test
         uses: ros-tooling/action-ros-ci@0.2.5
